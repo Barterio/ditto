@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"storj/ditto/pkg/config"
 	"testing"
 
 	test "storj/ditto/pkg/utils/testing_utils"
@@ -21,6 +22,7 @@ func TestDeleteObjectHandler(t *testing.T) {
 		Prime:  prime,
 		Alter:  alter,
 		Logger: &test.MockLogger{},
+		Config: &config.Config{DeleteOptions:&config.DeleteOptions{DefaultOptions:&config.DefaultOptions{}}},
 	}
 
 	cases := []struct {

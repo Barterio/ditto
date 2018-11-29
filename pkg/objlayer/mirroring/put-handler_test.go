@@ -1,6 +1,7 @@
 package mirroring
 
 import (
+	"storj/ditto/pkg/config"
 	tutils "storj/ditto/pkg/utils/testing_utils"
 	"testing"
 	"github.com/minio/minio/cmd"
@@ -35,6 +36,7 @@ func TestPutHandler(t *testing.T) {
 		Prime: prime,
 		Alter: alter,
 		Logger: nil,
+		Config: &config.Config{PutOptions:&config.PutOptions{DefaultOptions: &config.DefaultOptions{}}},
 	}
 
 	testError := errors.New("test error")

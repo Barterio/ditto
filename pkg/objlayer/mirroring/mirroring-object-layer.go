@@ -18,6 +18,8 @@ type MirroringObjectLayer struct {
 	Config *config.Config
 }
 
+var selectServer = (*MirroringObjectLayer).selectServerOrder
+
 //ObjectLayer interface---------------------------------------------------------------------------------------------------------------------
 
 func (m *MirroringObjectLayer) Shutdown(ctx context.Context) error {
@@ -145,6 +147,7 @@ func (m *MirroringObjectLayer) GetObject(ctx 		 context.Context,
 									     etag 	     string,
 										 opts 		 minio.ObjectOptions) (err error) {
 
+	m.Prime, m.Alter = selectServer(m, m.Config.GetObjectOptions.DefaultOptions.DefaultSource)
 	h := newGetHandler(m.Prime, m.Alter, false)
 	return h.process(ctx, bucket, object, startOffset, length, writer, etag, opts)
 }
@@ -159,6 +162,7 @@ func (m *MirroringObjectLayer) GetObjectInfo(ctx    context.Context,
 											 object string,
 											 opts   minio.ObjectOptions) (objInfo minio.ObjectInfo, err error) {
 
+	m.Prime, m.Alter = selectServer(m, m.Config.GetObjectOptions.DefaultOptions.DefaultSource)
 	h := NewGetObjectInfoHandler(m, ctx, bucket, object, opts)
 
 	return h.Process()
@@ -171,7 +175,8 @@ func (m *MirroringObjectLayer) GetObjectInfo(ctx    context.Context,
 // object      - object name.
 // metadata    - A map of metadata to store with the object.
 func (m *MirroringObjectLayer) PutObject(ctx context.Context, bucket string, object string, data *hash.Reader, metadata map[string]string, opts minio.ObjectOptions) (objInfo minio.ObjectInfo, err error) {
-	//TODO: decide prime and alter based on config
+
+	m.Prime, m.Alter = selectServer(m, m.Config.PutOptions.DefaultOptions.DefaultSource)
 	h := newPutHandler(m.Prime, m.Alter, m.Logger)
 	return h.process(ctx, bucket, object, data, metadata, opts)
 }
@@ -207,4 +212,17 @@ func (m *MirroringObjectLayer) DeleteObject(ctx context.Context, bucket, object 
 	h := NewDeleteObjectHandler(m, ctx, bucket, object)
 
 	return h.Process()
+}
+
+func (m *MirroringObjectLayer)selectServerOrder(defaultServer string) (prime minio.ObjectLayer, alter minio.ObjectLayer){
+	if defaultServer != "server1" && defaultServer != "server2" {
+		return m.Prime, m.Alter
+	}
+
+	if defaultServer == "" || defaultServer == "server1" {
+		return m.Prime, m.Alter
+	}
+
+	return m.Alter, m.Prime
+
 }

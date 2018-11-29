@@ -19,6 +19,7 @@ func NewListBucketsHandler(m   *MirroringObjectLayer,
 	h.m = m
 	h.ctx =  ctx
 
+	h.m.Prime, h.m.Alter = selectServer(h.m, h.m.Config.ListOptions.DefaultOptions.DefaultSource)
 	return h
 }
 

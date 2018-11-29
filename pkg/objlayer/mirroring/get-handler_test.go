@@ -1,6 +1,7 @@
 package mirroring
 
 import (
+	"storj/ditto/pkg/config"
 	"testing"
 	tutils "storj/ditto/pkg/utils/testing_utils"
 	"errors"
@@ -31,6 +32,7 @@ func TestGetHandler(t *testing.T) {
 		Prime: prime,
 		Alter: alter,
 		Logger: nil,
+		Config: &config.Config{GetObjectOptions:&config.GetObjectOptions{DefaultOptions: &config.DefaultOptions{}}},
 	}
 
 	getNoError := getObjectFuncFact(func(writer io.Writer, offset, length int64) error {

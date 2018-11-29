@@ -29,6 +29,7 @@ func NewListObjectsV2Handler(m   *MirroringObjectLayer,
 	h.startAfter = startAfter
 	h.fetchOwner = fetchOwner
 
+	h.m.Prime, h.m.Alter = h.m.selectServerOrder(h.m.Config.ListOptions.DefaultOptions.DefaultSource)
 	return h
 }
 

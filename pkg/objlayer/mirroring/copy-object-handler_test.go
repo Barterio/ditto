@@ -7,7 +7,8 @@ import (
 	"context"
 	"errors"
 	"github.com/stretchr/testify/assert"
-		"testing"
+	"storj/ditto/pkg/config"
+	"testing"
 
 	minio "github.com/minio/minio/cmd"
 	test "storj/ditto/pkg/utils/testing_utils"
@@ -22,8 +23,8 @@ func TestCopyObjectHandler(t *testing.T) {
 		Prime: prime,
 		Alter: alter,
 		Logger: nil,//&utils.LoggerV{},
+		Config: &config.Config{CopyOptions:&config.CopyOptions{DefaultOptions:&config.DefaultOptions{}}},
 	}
-
 	cases := []struct {
 		testName, address string
 		testFunc          func()

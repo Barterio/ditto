@@ -26,6 +26,8 @@ func NewListObjectsHandler(m   *MirroringObjectLayer,
 	h.delimiter = delimiter
 	h.maxKeys  = maxKeys
 
+	h.m.Prime, h.m.Alter = h.m.selectServerOrder(h.m.Config.ListOptions.DefaultOptions.DefaultSource)
+
 	return h
 }
 

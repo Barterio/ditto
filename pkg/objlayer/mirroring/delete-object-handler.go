@@ -16,6 +16,8 @@ func NewDeleteObjectHandler(m *MirroringObjectLayer, ctx context.Context, bucket
 	h.bucket = bucket
 	h.object = object
 
+	h.m.Prime, h.m.Alter = selectServer(h.m, h.m.Config.DeleteOptions.DefaultOptions.DefaultSource)
+
 	return h
 }
 

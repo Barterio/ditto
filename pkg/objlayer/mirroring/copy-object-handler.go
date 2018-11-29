@@ -30,6 +30,8 @@ func NewCopyObjectHandler(m 	     *MirroringObjectLayer,
 	h.srcOpts = srcOpts
 	h.dstOpts = dstOpts
 
+	h.m.Prime, h.m.Alter = selectServer(h.m, h.m.Config.CopyOptions.DefaultOptions.DefaultSource)
+
 	return h
 }
 
