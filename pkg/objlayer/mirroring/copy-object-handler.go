@@ -44,15 +44,19 @@ type copyObjectHandler struct {
 }
 
 func (h *copyObjectHandler) execPrime() *copyObjectHandler {
+	srcBucketName := h.m.getPrimeBucketName(h.m.Config.CopyOptions.DefaultOptions.DefaultSource,h.srcBucket)
+	destBucketName := h.m.getPrimeBucketName(h.m.Config.CopyOptions.DefaultOptions.DefaultSource,h.destBucket)
 	h.primeInfo, h.primeErr =
-		h.m.Prime.CopyObject(h.ctx, h.srcBucket, h.srcObject, h.destBucket, h.destObject, h.srcInfo, h.srcOpts, h.dstOpts)
+		h.m.Prime.CopyObject(h.ctx, srcBucketName, h.srcObject, destBucketName, h.destObject, h.srcInfo, h.srcOpts, h.dstOpts)
 
 	return h
 }
 
 func (h *copyObjectHandler) execAlter() *copyObjectHandler {
+	srcBucketName := h.m.getAlterBucketName(h.m.Config.CopyOptions.DefaultOptions.DefaultSource,h.srcBucket)
+	destBucketName := h.m.getAlterBucketName(h.m.Config.CopyOptions.DefaultOptions.DefaultSource,h.destBucket)
 	h.alterInfo, h.alterErr =
-		h.m.Alter.CopyObject(h.ctx, h.srcBucket, h.srcObject, h.destBucket, h.destObject, h.srcInfo, h.srcOpts, h.dstOpts)
+		h.m.Alter.CopyObject(h.ctx, srcBucketName, h.srcObject, destBucketName, h.destObject, h.srcInfo, h.srcOpts, h.dstOpts)
 
 	return h
 }

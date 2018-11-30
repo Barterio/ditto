@@ -13,7 +13,8 @@ func NewDeleteBucketHandler(m *MirroringObjectLayer, ctx context.Context, bucket
 
 	h.m = m
 	h.ctx =  ctx
-	h.bucket = bucket
+	h.primeBucket = h.m.getPrimeBucketName(h.m.Config.DeleteOptions.DefaultOptions.DefaultSource, bucket)
+	h.alterBucket = h.m.getAlterBucketName(h.m.Config.DeleteOptions.DefaultOptions.DefaultSource, bucket)
 
 	h.m.Prime, h.m.Alter = selectServer(h.m, h.m.Config.DeleteOptions.DefaultOptions.DefaultSource)
 
@@ -22,17 +23,19 @@ func NewDeleteBucketHandler(m *MirroringObjectLayer, ctx context.Context, bucket
 
 type deleteBucketHandler struct {
 	baseHandler
-	bucket, object string
+	primeBucket string
+	alterBucket string
+	object string
 }
 
 func (h *deleteBucketHandler) execPrime() *deleteBucketHandler {
-	h.primeErr = h.m.Prime.DeleteBucket(h.ctx, h.bucket)
+	h.primeErr = h.m.Prime.DeleteBucket(h.ctx, h.primeBucket)
 
 	return h
 }
 
 func (h *deleteBucketHandler) execAlter() *deleteBucketHandler {
-	h.alterErr = h.m.Alter.DeleteBucket(h.ctx, h.bucket)
+	h.alterErr = h.m.Alter.DeleteBucket(h.ctx, h.alterBucket)
 
 	return h
 }

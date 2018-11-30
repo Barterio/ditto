@@ -7,6 +7,7 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"storj/ditto/pkg/config"
 	"testing"
 
 	minio "github.com/minio/minio/cmd"
@@ -24,6 +25,7 @@ func TestGetBucketInfoHandler(t *testing.T) {
 		Prime: prime,
 		Alter: alter,
 		Logger: logger,
+		Config: &config.Config{GetObjectOptions:&config.GetObjectOptions{DefaultOptions:&config.DefaultOptions{}}},
 	}
 
 	cases := []struct {

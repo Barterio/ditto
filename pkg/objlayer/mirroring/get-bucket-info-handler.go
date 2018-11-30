@@ -16,26 +16,28 @@ func NewGetBucketInfoHandler(m 	     *MirroringObjectLayer,
 
 	h.m = m
 	h.ctx =  ctx
-	h.bucket = bucket
+	h.primeBucket = h.m.getPrimeBucketName(h.m.Config.GetObjectOptions.DefaultOptions.DefaultSource, bucket)
+	h.alterBucket = h.m.getAlterBucketName(h.m.Config.GetObjectOptions.DefaultOptions.DefaultSource, bucket)
 
 	return h
 }
 
 type getBucketInfoHandler struct {
 	baseHandler
-	bucket      string
+	primeBucket string
+	alterBucket string
 	primeInfo   minio.BucketInfo
 	alterInfo   minio.BucketInfo
 }
 
 func (h *getBucketInfoHandler) execPrime() *getBucketInfoHandler {
-	h.primeInfo, h.primeErr = h.m.Prime.GetBucketInfo(h.ctx, h.bucket)
+	h.primeInfo, h.primeErr = h.m.Prime.GetBucketInfo(h.ctx, h.primeBucket)
 
 	return h
 }
 
 func (h *getBucketInfoHandler) execAlter() *getBucketInfoHandler {
-	h.alterInfo, h.alterErr = h.m.Alter.GetBucketInfo(h.ctx, h.bucket)
+	h.alterInfo, h.alterErr = h.m.Alter.GetBucketInfo(h.ctx, h.alterBucket)
 
 	return h
 }

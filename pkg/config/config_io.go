@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"os"
@@ -21,8 +22,8 @@ func ParseConfig() (config *Config, err error) {
 		return nil, errors.New("Credentials are not set. Please define credentials with `ditto config set`")
 	}
 
-	// bytes, _ := json.MarshalIndent(config, "", "\t")
-	// println(string(bytes))
+	bytes, _ := json.MarshalIndent(config, "", "\t")
+	println(string(bytes))
 
 	return config, nil
 }
@@ -34,9 +35,11 @@ func ReadConfig(useDefaults bool) (err error) {
 	viper.SetConfigType("json")
 
 	// Create empty file if config file not exist yet
-	user, err := user.Current()
+	userPath, err := user.Current()
 	if err == nil {
-		os.OpenFile(user.HomeDir+"/.ditto/config.json", os.O_RDONLY|os.O_CREATE, 0666)
+		var path = userPath.HomeDir+"/.ditto/config.json"
+		println(path)
+		_, _ = os.OpenFile(path, os.O_RDONLY|os.O_CREATE, 0666)
 	}
 
 	if useDefaults {
@@ -77,4 +80,6 @@ func setDefaults() {
 	// DeleteOptions defaults
 	viper.SetDefault(DELETE_DEFAULT_SOURCE, "server1")
 	viper.SetDefault(DELETE_THROW_IMMEDIATELY, true)
+
+	viper.SetDefault(BUCKET_NAMES_MAP, make(map[string]string))
 }

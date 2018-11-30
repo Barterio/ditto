@@ -20,7 +20,8 @@ func NewListObjectsHandler(m   *MirroringObjectLayer,
 
 	h.m = m
 	h.ctx =  ctx
-	h.bucket = bucket
+	h.primeBucket = h.m.getPrimeBucketName(h.m.Config.ListOptions.DefaultOptions.DefaultSource, bucket)
+	h.alterBucket = h.m.getAlterBucketName(h.m.Config.ListOptions.DefaultOptions.DefaultSource, bucket)
 	h.prefix = prefix
 	h.marker = marker
 	h.delimiter = delimiter
@@ -33,7 +34,8 @@ func NewListObjectsHandler(m   *MirroringObjectLayer,
 
 type listObjectsHandler struct {
 	baseHandler
-	bucket      string
+	primeBucket      string
+	alterBucket      string
 	prefix      string
 	marker      string
 	delimiter   string
@@ -44,7 +46,7 @@ type listObjectsHandler struct {
 
 func (h *listObjectsHandler) execPrime() *listObjectsHandler {
 
-	primeInfo, primeErr := h.m.Prime.ListObjects(h.ctx, h.bucket, h.prefix, h.marker, h.delimiter, h.maxKeys)
+	primeInfo, primeErr := h.m.Prime.ListObjects(h.ctx, h.primeBucket, h.prefix, h.marker, h.delimiter, h.maxKeys)
 
 	h.primeInfo, h.primeErr = &primeInfo, primeErr
 
@@ -52,7 +54,8 @@ func (h *listObjectsHandler) execPrime() *listObjectsHandler {
 }
 
 func (h *listObjectsHandler) execAlter() *listObjectsHandler {
-	alterInfo, alterErr := h.m.Alter.ListObjects(h.ctx, h.bucket, h.prefix, h.marker, h.delimiter, h.maxKeys)
+
+	alterInfo, alterErr := h.m.Alter.ListObjects(h.ctx, h.alterBucket, h.prefix, h.marker, h.delimiter, h.maxKeys)
 
 	h.alterInfo, h.alterErr = &alterInfo, alterErr
 

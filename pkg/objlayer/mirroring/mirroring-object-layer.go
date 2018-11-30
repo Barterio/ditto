@@ -7,6 +7,7 @@ import (
 	"io"
 	"storj/ditto/pkg/config"
 	l "storj/ditto/pkg/logger"
+	"storj/ditto/pkg/utils"
 )
 
 //MirroringObjectLayer is
@@ -214,15 +215,71 @@ func (m *MirroringObjectLayer) DeleteObject(ctx context.Context, bucket, object 
 	return h.Process()
 }
 
-func (m *MirroringObjectLayer)selectServerOrder(defaultServer string) (prime minio.ObjectLayer, alter minio.ObjectLayer){
+func (m *MirroringObjectLayer) selectServerOrder(defaultServer string) (prime minio.ObjectLayer, alter minio.ObjectLayer){
 	if defaultServer != "server1" && defaultServer != "server2" {
 		return m.Prime, m.Alter
 	}
 
-	if defaultServer == "" || defaultServer == "server1" {
+	if defaultServer == "server1" {
 		return m.Prime, m.Alter
 	}
 
 	return m.Alter, m.Prime
+}
 
+func (m *MirroringObjectLayer) getPrimeBucketName(defaultServer string, bucketName string) string {
+	if !m.isBucketNamePrerequisitesValid(defaultServer, bucketName) {
+		return bucketName
+	}
+	if defaultServer == "server1" {
+		return bucketName
+	}
+
+	if defaultServer == "server2" {
+		mappedBucketName, ok := m.Config.BucketNamesMap[bucketName]
+		if !ok {
+			return bucketName
+		}
+
+		return mappedBucketName
+	}
+
+	return bucketName
+}
+
+func (m *MirroringObjectLayer) getAlterBucketName(defaultServer string, bucketName string) string {
+	if !m.isBucketNamePrerequisitesValid(defaultServer, bucketName) {
+		return bucketName
+	}
+
+	if defaultServer == "server2" {
+		return bucketName
+	}
+
+	if defaultServer == "server1" {
+		mappedBucketName, ok := m.Config.BucketNamesMap[bucketName]
+		if !ok {
+			return bucketName
+		}
+
+		return mappedBucketName
+	}
+
+	return bucketName
+}
+
+func (m *MirroringObjectLayer) isBucketNamePrerequisitesValid(defaultServer string, bucketName string) bool {
+	var bucketNameExist = utils.ContainsKey(m.Config.BucketNamesMap, bucketName) ||
+		utils.ContainsValue(m.Config.BucketNamesMap, bucketName)
+
+	var isDefaultServerValid = defaultServer == "server1" || defaultServer == "server2"
+
+	if m.Config.BucketNamesMap == nil ||
+		len(m.Config.BucketNamesMap) == 0 ||
+		!bucketNameExist ||
+		!isDefaultServerValid{
+
+		return false
+	}
+	return true
 }

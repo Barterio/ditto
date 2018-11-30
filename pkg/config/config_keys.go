@@ -31,6 +31,8 @@ const COPY_THROW_IMMEDIATELY = "CopyOptions." + DEFAULT_OPTIONS_THROW_IMMEDIATEL
 const DELETE_DEFAULT_SOURCE = "DeleteOptions." + DEFAULT_OPTIONS_DEFAULT_SOURCE
 const DELETE_THROW_IMMEDIATELY = "DeleteOptions." + DEFAULT_OPTIONS_THROW_IMMEDIATELY
 
+const BUCKET_NAMES_MAP = "bucketNamesMap"
+
 // const ConfigKeys:= make(string, 20){"",""}
 func GetKeysArray() []string {
 	return []string{

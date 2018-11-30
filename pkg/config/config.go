@@ -15,6 +15,7 @@ type Config struct {
 	GetObjectOptions *GetObjectOptions
 	CopyOptions      *CopyOptions
 	DeleteOptions    *DeleteOptions
+	BucketNamesMap   map[string]string
 }
 
 type DefaultOptions struct {
@@ -110,6 +111,12 @@ func (c *Config) WithCopyOptions(options *DefaultOptions) *Config {
 	return c
 }
 
+func (c *Config) WithBucketNamesMap(m map[string]string) *Config {
+	c.BucketNamesMap = m
+
+	return c
+}
+
 func NewCredentials(endpoint string, accessKey string, secretKey string) *Credentials {
 
 	return &Credentials{
@@ -142,53 +149,6 @@ func (do *DefaultOptions) IsThrowImmediateError(cdo *DefaultOptions) bool {
 	}
 
 	return cdo.ThrowImmediately
-}
-
-func (c *Config) getPrimeCredentials(server string) *Credentials {
-	switch server {
-	case "server1":
-
-		return c.Server1
-	case "server2":
-
-		return c.Server2
-	default:
-
-		return nil
-
-	}
-}
-
-func (c *Config) getAlterCredentials(server string) *Credentials {
-	switch server {
-	case "server1":
-
-		return c.Server2
-	case "server2":
-
-		return c.Server1
-	default:
-
-		return nil
-	}
-}
-
-func (c *Config) GetMergedPrimeCredentials(options *DefaultOptions) *Credentials {
-	if options != nil && "" != options.DefaultSource {
-
-		return c.getPrimeCredentials(options.DefaultSource)
-	}
-
-	return c.getPrimeCredentials(c.DefaultOptions.DefaultSource)
-}
-
-func (c *Config) GetMergedAlterCredentials(options *DefaultOptions) *Credentials {
-	if options != nil && "" != options.DefaultSource {
-
-		return c.getAlterCredentials(options.DefaultSource)
-	}
-
-	return c.getAlterCredentials(c.DefaultOptions.DefaultSource)
 }
 
 func (c *Credentials) IsEmpty() bool {
